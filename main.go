@@ -1,8 +1,8 @@
 package main
 
 import (
-		"fmt"
-		loader "github.com/victorcampos/harbor/loader"
+	"fmt"
+	loader "github.com/victorcampos/harbor/loader"
 )
 
 type HarborConfig struct {

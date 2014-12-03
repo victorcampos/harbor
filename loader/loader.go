@@ -1,8 +1,8 @@
 package loader
 
 import (
-		"io/ioutil"
-		yaml "gopkg.in/yaml.v2"
+	"io/ioutil"
+	yaml "gopkg.in/yaml.v2"
 )
 
 type HarborConfig struct {
