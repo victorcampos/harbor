@@ -1,0 +1,6 @@
+bucketrootpath: data.elo7.com.br
+downloadpath: config/
+filelist:
+  - path: test
+  - path: test2
+    optional: true
