@@ -1,14 +1,18 @@
 package loader
 
 import (
-	"io/ioutil"
 	yaml "gopkg.in/yaml.v2"
+	"io/ioutil"
 )
 
 type HarborConfig struct {
+	ImageTag       string
 	BucketRootPath string
-	DownloadPath string `yaml:",omitempty"`
-	FileList []struct{Path string; Optional bool}
+	DownloadPath   string `yaml:",omitempty"`
+	Files          []struct {
+		Path string
+	}
+	Commands []string
 }
 
 func LoadConfig() (HarborConfig, error) {
