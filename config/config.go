@@ -5,6 +5,11 @@ import (
 	"io/ioutil"
 )
 
+type HarborFile struct {
+	S3Path   string
+	FileName string
+}
+
 type HarborConfig struct {
 	ImageTag string
 	S3       struct {
@@ -12,11 +17,8 @@ type HarborConfig struct {
 		BasePath string
 	}
 	DownloadPath string `yaml:",omitempty"`
-	Files        []struct {
-		S3Path   string
-		FileName string
-	}
-	Commands []string
+	Files        []HarborFile
+	Commands     []string
 }
 
 func Load() (HarborConfig, error) {

@@ -1,10 +1,8 @@
 imagetag: test
 s3:
-  bucket: harbor-test
-  basepath: /
+  bucket: data.elo7.com.br
+  basepath: /configuration/nginx
 downloadpath: testing/
 files:
-  - s3path: harbor_test_file
+  - s3path: nginx.conf.playground-targaryen3
     filename: test.file
-commands:
-  - ls -la

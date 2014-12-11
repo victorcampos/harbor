@@ -13,13 +13,8 @@ func DownloadFromS3(harborConfig config.HarborConfig) error {
 	fileListLength := len(harborConfig.Files)
 
 	if fileListLength > 0 {
-		awsAuthentication, err := aws.EnvAuth()
-		if err != nil {
-			return err
-		}
+		bucket, err := getBucket(harborConfig.S3.Bucket)
 
-		s3Connection := s3.New(awsAuthentication, aws.USEast)
-		bucket := s3Connection.Bucket(harborConfig.S3.Bucket)
 		if err != nil {
 			return err
 		}
@@ -28,21 +23,50 @@ func DownloadFromS3(harborConfig config.HarborConfig) error {
 		fmt.Printf("Files to be downloaded: %d\r\n", fileListLength)
 		fmt.Printf("Downloading to: %s\r\n\r\n", harborConfig.DownloadPath)
 		for key, value := range harborConfig.Files {
-			outputFilePath := filepath.Join(harborConfig.DownloadPath, value.FileName)
-
 			fmt.Printf("Downloading file number %d of %d...\r\n", key+1, fileListLength)
-			fmt.Printf("File: %s\r\n", outputFilePath)
 
-			contents, err := bucket.Get(harborConfig.S3.BasePath + value.S3Path)
-			if err != nil {
-				return err
-			}
+			err := downloadFile(bucket, harborConfig.S3.BasePath, harborConfig.DownloadPath, value)
 
-			err = ioutil.WriteFile(outputFilePath, contents, 0644)
 			if err != nil {
 				return err
 			}
 		}
+	}
+
+	return nil
+}
+
+func getBucket(bucketName string) (*s3.Bucket, error) {
+	var bucket *s3.Bucket
+
+	awsAuthentication, err := aws.EnvAuth()
+	if err != nil {
+		return bucket, err
+	}
+
+	s3Connection := s3.New(awsAuthentication, aws.USEast)
+	bucket = s3Connection.Bucket(bucketName)
+	if err != nil {
+		return bucket, err
+	}
+
+	return bucket, nil
+}
+
+func downloadFile(bucket *s3.Bucket, s3BasePath string, downloadPath string, file config.HarborFile) error {
+	outputFilePath := filepath.Join(downloadPath, file.FileName)
+	s3FilePath := filepath.Join(s3BasePath, file.S3Path)
+
+	fmt.Printf("File: %s\r\n", outputFilePath)
+
+	contents, err := bucket.Get(s3FilePath)
+	if err != nil {
+		return err
+	}
+
+	err = ioutil.WriteFile(outputFilePath, contents, 0644)
+	if err != nil {
+		return err
 	}
 
 	return nil
