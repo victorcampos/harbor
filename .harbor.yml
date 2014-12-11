@@ -2,7 +2,7 @@ imagetag: test
 s3:
   bucket: harbor-test
   basepath: /
-downloadpath: config/
+downloadpath: testing/
 files:
   - s3path: harbor_test_file
     filename: test.file

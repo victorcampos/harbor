@@ -1,4 +1,4 @@
-package loader
+package config
 
 import (
 	yaml "gopkg.in/yaml.v2"
@@ -19,7 +19,7 @@ type HarborConfig struct {
 	Commands []string
 }
 
-func LoadConfig() (HarborConfig, error) {
+func Load() (HarborConfig, error) {
 	harborConfig := HarborConfig{}
 	configFile, err := ioutil.ReadFile(".harbor.yml")
 
