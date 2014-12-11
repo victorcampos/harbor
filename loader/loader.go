@@ -6,11 +6,15 @@ import (
 )
 
 type HarborConfig struct {
-	ImageTag       string
-	BucketRootPath string
-	DownloadPath   string `yaml:",omitempty"`
-	Files          []struct {
-		Path string
+	ImageTag string
+	S3       struct {
+		Bucket   string
+		BasePath string
+	}
+	DownloadPath string `yaml:",omitempty"`
+	Files        []struct {
+		S3Path   string
+		FileName string
 	}
 	Commands []string
 }
