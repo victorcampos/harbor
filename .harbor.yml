@@ -1,9 +1,10 @@
 imagetag: test
-bucketrootpath: data.elo7.com.br
+s3:
+  bucket: harbor-test
+  basepath: /
 downloadpath: config/
-filelist:
-  - path: test
-  - path: test2
-    optional: true
+files:
+  - s3path: harbor_test_file
+    filename: test.file
 commands:
   - ls -la
