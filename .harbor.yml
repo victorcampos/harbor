@@ -6,3 +6,7 @@ downloadpath: testing/
 files:
   - s3path: nginx.conf.playground-targaryen3
     filename: test.file
+commands:
+  - ls -la
+  - date
+  - uptime
