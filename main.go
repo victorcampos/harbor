@@ -13,12 +13,10 @@ func main() {
 	environment := flag.String("env", "production", "sets the $ENVIRONMENT substitution string")
 	flag.Parse()
 
-	harborConfig, err := config.Load()
-	checkError(err)
-
-	harborConfig.Environment = *environment
-
 	fmt.Printf("Using environment: %s\r\n", *environment)
+
+	harborConfig, err := config.Load(*environment)
+	checkError(err)
 
 	err = download.FromS3(harborConfig)
 	checkError(err)

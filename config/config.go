@@ -22,13 +22,15 @@ type HarborConfig struct {
 	Commands     []string
 }
 
-func Load() (HarborConfig, error) {
+func Load(environment string) (HarborConfig, error) {
 	harborConfig := HarborConfig{}
-	configFile, err := ioutil.ReadFile(".harbor.yml")
 
+	configFile, err := ioutil.ReadFile(".harbor.yml")
 	if err != nil {
 		return harborConfig, err
 	}
+
+	configFile = SetEnv(environment, configFile)
 
 	err = yaml.Unmarshal(configFile, &harborConfig)
 
