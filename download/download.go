@@ -1,4 +1,4 @@
-package downloader
+package download
 
 import (
 	"fmt"
@@ -9,7 +9,7 @@ import (
 	"path/filepath"
 )
 
-func DownloadFromS3(harborConfig config.HarborConfig) error {
+func FromS3(harborConfig config.HarborConfig) error {
 	fileListLength := len(harborConfig.Files)
 
 	if fileListLength > 0 {
@@ -19,11 +19,11 @@ func DownloadFromS3(harborConfig config.HarborConfig) error {
 			return err
 		}
 
-		fmt.Printf("Downloading from bucket: %s\r\n", harborConfig.S3.Bucket)
-		fmt.Printf("Files to be downloaded: %d\r\n", fileListLength)
-		fmt.Printf("Downloading to: %s\r\n\r\n", harborConfig.DownloadPath)
+		fmt.Printf("--- Downloading from bucket: %s\r\n", harborConfig.S3.Bucket)
+		fmt.Printf("--- Files to be downloaded: %d\r\n", fileListLength)
+		fmt.Printf("--- Downloading to: %s\r\n", harborConfig.DownloadPath)
 		for key, value := range harborConfig.Files {
-			fmt.Printf("Downloading file number %d of %d...\r\n", key+1, fileListLength)
+			fmt.Printf("--- Downloading file %d of %d...\r\n", key+1, fileListLength)
 
 			err := downloadFile(bucket, harborConfig.S3.BasePath, harborConfig.DownloadPath, value)
 
