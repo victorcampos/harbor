@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"github.com/victorcampos/harbor/config"
 	"github.com/victorcampos/harbor/download"
@@ -9,8 +10,15 @@ import (
 )
 
 func main() {
+	environment := flag.String("env", "production", "sets the $ENVIRONMENT substitution string")
+	flag.Parse()
+
 	harborConfig, err := config.Load()
 	checkError(err)
+
+	harborConfig.Environment = *environment
+
+	fmt.Printf("Using environment: %s\r\n", *environment)
 
 	err = download.FromS3(harborConfig)
 	checkError(err)

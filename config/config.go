@@ -11,8 +11,9 @@ type HarborFile struct {
 }
 
 type HarborConfig struct {
-	ImageTag string
-	S3       struct {
+	ImageTag    string
+	Environment string
+	S3          struct {
 		Bucket   string
 		BasePath string
 	}

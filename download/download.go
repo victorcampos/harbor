@@ -57,6 +57,7 @@ func downloadFile(bucket *s3.Bucket, s3BasePath string, downloadPath string, fil
 	outputFilePath := filepath.Join(downloadPath, file.FileName)
 	s3FilePath := filepath.Join(s3BasePath, file.S3Path)
 
+	fmt.Printf("S3 Path: %s\r\n", s3FilePath)
 	fmt.Printf("File: %s\r\n", outputFilePath)
 
 	contents, err := bucket.Get(s3FilePath)
