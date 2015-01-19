@@ -1,6 +1,7 @@
 package config
 
 import (
+	"github.com/victorcampos/harbor/commandline"
 	yaml "gopkg.in/yaml.v2"
 	"io/ioutil"
 )
@@ -11,9 +12,9 @@ type HarborFile struct {
 }
 
 type HarborConfig struct {
-	ImageTag    string
-	Environment string
-	S3          struct {
+	ImageTag      string
+	CliConfigVars commandline.ConfigVarsMap
+	S3            struct {
 		Bucket   string
 		BasePath string
 	}
@@ -22,7 +23,7 @@ type HarborConfig struct {
 	Commands     []string
 }
 
-func Load(environment string) (HarborConfig, error) {
+func Load(cliConfigVars commandline.ConfigVarsMap) (HarborConfig, error) {
 	harborConfig := HarborConfig{}
 
 	configFile, err := ioutil.ReadFile(".harbor.yml")
@@ -30,7 +31,7 @@ func Load(environment string) (HarborConfig, error) {
 		return harborConfig, err
 	}
 
-	configFile = SetEnv(environment, configFile)
+	configFile = SetEnv(cliConfigVars, configFile)
 
 	err = yaml.Unmarshal(configFile, &harborConfig)
 

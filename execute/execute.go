@@ -3,6 +3,7 @@ package execute
 import (
 	"fmt"
 	"github.com/victorcampos/harbor/config"
+	"os"
 	"os/exec"
 	"strings"
 )
@@ -16,15 +17,11 @@ func Commands(harborConfig config.HarborConfig) error {
 			fmt.Printf("--- Executing command %d of %d...\r\n", key+1, commandListLength)
 
 			commandHead, commandArgs := splitCommand(value)
+			fmt.Printf("--- Executing %s with \"%s\"\r\n", commandHead, commandArgs)
 
-			command := exec.Command(commandHead, commandArgs...)
-			commandOutput, err := command.CombinedOutput()
-
-			if err != nil {
+			if err := CommandWithArgs(commandHead, commandArgs...); err != nil {
 				return err
 			}
-
-			fmt.Printf("--- Output of: %s %s\r\n%s", commandHead, commandArgs, string(commandOutput))
 		}
 	}
 
@@ -34,7 +31,20 @@ func Commands(harborConfig config.HarborConfig) error {
 func splitCommand(command string) (commandHead string, commandArgs []string) {
 	commandParts := strings.Fields(command)
 	commandHead = commandParts[0]
-	commandArgs = commandParts[1:len(commandParts)]
+	commandArgs = commandParts[1:]
 
 	return
+}
+
+func CommandWithArgs(commandHead string, commandArgs ...string) error {
+	args := strings.Join(commandArgs, " ")
+	concatenatedCommand := strings.Join([]string{commandHead, args}, " ")
+
+	command := exec.Command("/bin/bash", "-c", concatenatedCommand)
+	command.Stdout = os.Stdout
+	command.Stderr = os.Stderr
+
+	err := command.Run()
+
+	return err
 }
