@@ -25,6 +25,7 @@ func FromS3(harborConfig config.HarborConfig) error {
 		for key, value := range harborConfig.Files {
 			fmt.Printf("--- Downloading file %d of %d...\r\n", key+1, fileListLength)
 
+			// TODO: Enable custom download path per file
 			err := downloadFile(bucket, harborConfig.S3.BasePath, harborConfig.DownloadPath, value)
 
 			if err != nil {
@@ -60,11 +61,13 @@ func downloadFile(bucket *s3.Bucket, s3BasePath string, downloadPath string, fil
 	fmt.Printf("S3 Path: %s\r\n", s3FilePath)
 	fmt.Printf("File: %s\r\n", outputFilePath)
 
+	// FIXME: Use GetReader to stream file contents instead of loading all the file to memory before writing
 	contents, err := bucket.Get(s3FilePath)
 	if err != nil {
 		return err
 	}
 
+	// TODO: Enable permission setting through harbor.yml
 	err = ioutil.WriteFile(outputFilePath, contents, 0644)
 	if err != nil {
 		return err

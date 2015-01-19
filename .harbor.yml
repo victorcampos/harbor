@@ -2,12 +2,12 @@ imagetag: test
 s3:
   bucket: data.elo7.com.br
   basepath: /configuration/nginx
-downloadpath: download-$ENVIRONMENT/
+downloadpath: download-${ENVIRONMENT}/
 files:
-  - s3path: nginx.conf.$ENVIRONMENT
+  - s3path: nginx.conf.${ENVIRONMENT}
     filename: test.file
 commands:
-  - mkdir download-$ENVIRONMENT
+  - mkdir download-${ENVIRONMENT2}
   - ls -la
   - date
   - uptime

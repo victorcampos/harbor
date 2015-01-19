@@ -3,25 +3,30 @@ package main
 import (
 	"flag"
 	"fmt"
+	"github.com/victorcampos/harbor/commandline"
 	"github.com/victorcampos/harbor/config"
 	"github.com/victorcampos/harbor/download"
 	"github.com/victorcampos/harbor/execute"
+	"github.com/victorcampos/harbor/execute/docker"
 	"os"
 )
 
 func main() {
-	environment := flag.String("env", "production", "sets the $ENVIRONMENT substitution string")
+	configVars := make(commandline.ConfigVarsMap)
+
+	flag.Var(&configVars, "e", "sets configuration variables")
 	flag.Parse()
 
-	fmt.Printf("Using environment: %s\r\n", *environment)
-
-	harborConfig, err := config.Load(*environment)
+	harborConfig, err := config.Load(configVars)
 	checkError(err)
 
 	err = download.FromS3(harborConfig)
 	checkError(err)
 
 	err = execute.Commands(harborConfig)
+	checkError(err)
+
+	err = docker.Build(harborConfig.ImageTag)
 	checkError(err)
 }
 
