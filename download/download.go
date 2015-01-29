@@ -6,6 +6,7 @@ import (
 	"github.com/goamz/goamz/s3"
 	"github.com/victorcampos/harbor/config"
 	"io/ioutil"
+	"os"
 	"path/filepath"
 )
 
@@ -67,8 +68,18 @@ func downloadFile(bucket *s3.Bucket, s3BasePath string, downloadPath string, fil
 		return err
 	}
 
-	// TODO: Enable permission setting through harbor.yml
-	err = ioutil.WriteFile(outputFilePath, contents, 0644)
+	// Sets default permission if not configured in YAML
+	if file.Permission == 0 {
+		file.Permission = 0644
+	}
+
+	filemode := os.FileMode(file.Permission & 0777)
+	err = ioutil.WriteFile(outputFilePath, contents, filemode)
+	if err != nil {
+		return err
+	}
+
+	err = os.Chmod(outputFilePath, filemode)
 	if err != nil {
 		return err
 	}

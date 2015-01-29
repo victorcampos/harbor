@@ -7,8 +7,9 @@ import (
 )
 
 type HarborFile struct {
-	S3Path   string
-	FileName string
+	S3Path     string
+	FileName   string
+	Permission int
 }
 
 type HarborConfig struct {
