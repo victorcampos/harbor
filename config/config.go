@@ -27,7 +27,7 @@ type HarborConfig struct {
 func Load(cliConfigVars commandline.ConfigVarsMap) (HarborConfig, error) {
 	harborConfig := HarborConfig{}
 
-	configFile, err := ioutil.ReadFile(".harbor.yml")
+	configFile, err := ioutil.ReadFile("harbor.yml")
 	if err != nil {
 		return harborConfig, err
 	}
