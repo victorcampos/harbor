@@ -11,31 +11,48 @@ import (
 	"os"
 )
 
+const VERSION = "0.0.2"
+
 func main() {
 	setCustomUsageMessage()
 
 	configVars := make(commandline.ConfigVarsMap)
 
 	flag.Var(&configVars, "e", "sets configuration variables")
+	noDownloadFlag := flag.Bool("no-download", false, "do not download files")
+	noCommandFlag := flag.Bool("no-command", false, "do not run commands")
+	noDockerFlag := flag.Bool("no-docker", false, "do not run docker build, tag and push after")
+	showVersionFlag := flag.Bool("v", false, "shows version")
 	flag.Parse()
+
+	if *showVersionFlag {
+		fmt.Printf("Harbor version %s\n", VERSION)
+		os.Exit(0)
+	}
 
 	harborConfig, err := config.Load(configVars)
 	checkError(err)
 
-	err = download.FromS3(harborConfig)
-	checkError(err)
+	if !*noDownloadFlag {
+		err = download.FromS3(harborConfig)
+		checkError(err)
+	}
 
-	err = execute.Commands(harborConfig)
-	checkError(err)
+	if !*noCommandFlag {
+		err = execute.Commands(harborConfig)
+		checkError(err)
+	}
 
-	err = docker.Build(harborConfig.ImageTag)
-	checkError(err)
+	if !*noDockerFlag {
+		err = docker.Build(harborConfig.ImageTag)
+		checkError(err)
+	}
 }
 
 func setCustomUsageMessage() {
 	// TODO: Alter the help message when not using /bin/bash anymore
 	flag.Usage = func() {
-		helpText := `Usage: harbor [-e KEY=VALUE]
+		helpText := `Usage: harbor [-h] [-v] [-e <KEY>=<VALUE>] [-no-download] [-no-command] [-no-docker]
 
 Harbor looks up a file named harbor.yml in the same directory where run from, harbor.yml structure is:
  imagetag: <tag to be used on 'docker build'>
@@ -54,7 +71,11 @@ Harbor looks up a file named harbor.yml in the same directory where run from, ha
 
 Options:
   -e []: List of KEY=VALUE to be replaced in harbor.yml
-		`
+  -v: Display version information
+  -no-download: do not download files
+  -no-command: do not run commands
+  -no-docker: do not run 'docker build', 'docker tag' and 'docker push' after file downloads and command runs
+`
 		fmt.Println(helpText)
 	}
 }
