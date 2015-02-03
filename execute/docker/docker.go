@@ -16,11 +16,11 @@ func Build(imageTag string) error {
 
 	// FIXME: Use Docker Remote API to perform docker commands
 	// Current usage is too OS-specific and depends on sudo power when executing harbor
-	if err := execute.CommandWithArgs("sudo", "docker", "build", "-t", versionedImageTag, cwd); err != nil {
+	if err := execute.CommandWithArgs("docker", "build", "-t", versionedImageTag, cwd); err != nil {
 		return err
 	}
 
-	if err := execute.CommandWithArgs("sudo", "docker", "tag", versionedImageTag, fmt.Sprintf("%s:latest", imageTag)); err != nil {
+	if err := execute.CommandWithArgs("docker", "tag", versionedImageTag, fmt.Sprintf("%s:latest", imageTag)); err != nil {
 		return err
 	}
 
@@ -36,7 +36,7 @@ func Build(imageTag string) error {
 }
 
 func push(imageTag string) error {
-	if err := execute.CommandWithArgs("sudo", "docker", "push", imageTag); err != nil {
+	if err := execute.CommandWithArgs("docker", "push", imageTag); err != nil {
 		return err
 	}
 
