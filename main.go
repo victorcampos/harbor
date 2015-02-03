@@ -11,7 +11,7 @@ import (
 	"os"
 )
 
-const VERSION = "0.0.2"
+const VERSION = "0.0.3"
 
 func main() {
 	setCustomUsageMessage()
@@ -62,7 +62,7 @@ Harbor looks up a file named harbor.yml in the same directory where run from, ha
    basepath: <inside the bucket the root path for files to be downloaded>
  files:
    - s3path: <path to file in S3 after [s3.bucket]/[s3.basepath]>
-     localname: <local path + name of the file, will be downloaded into [downloadpath]/[localname]>
+     filename: <local path + name of the file, will be downloaded into [downloadpath]/[localname]>
      permission: <[optional] file permissions, default 0644>
  - commands:
    <YAML array containing shell commands (currently /bin/bash) to be run before 'docker build'>

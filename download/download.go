@@ -56,8 +56,11 @@ func getBucket(bucketName string) (*s3.Bucket, error) {
 }
 
 func downloadFile(bucket *s3.Bucket, s3BasePath string, downloadPath string, file config.HarborFile) error {
-	outputFilePath := filepath.Join(downloadPath, file.FileName)
 	s3FilePath := filepath.Join(s3BasePath, file.S3Path)
+	outputFilePath := filepath.Join(downloadPath, file.FileName)
+	outputDirectory := filepath.Dir(outputFilePath)
+
+	os.MkdirAll(outputDirectory, 0755)
 
 	fmt.Printf("S3 Path: %s\r\n", s3FilePath)
 	fmt.Printf("File: %s\r\n", outputFilePath)
