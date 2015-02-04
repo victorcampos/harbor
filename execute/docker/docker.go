@@ -7,7 +7,7 @@ import (
 	"time"
 )
 
-func Build(imageTag string, tags []string) error {
+func Build(imageTag string, supplementaryTags []string) error {
 	cwd, _ := os.Getwd()
 
 	// FIXME: Use Docker Remote API to perform docker commands
@@ -16,8 +16,8 @@ func Build(imageTag string, tags []string) error {
 		return err
 	}
 
-	validatedTags := buildTags(tags)
-	for _, tag := range validatedTags {
+	finalTags := buildTags(supplementaryTags)
+	for _, tag := range finalTags {
 		if err := createAndPushTag(imageTag, tag); err != nil {
 			return err
 		}
@@ -28,25 +28,28 @@ func Build(imageTag string, tags []string) error {
 
 func buildTags(tags []string) []string {
 	// always put latest
-	validatedTags := []string{"latest"}
+	finalTags := []string{"latest"}
 
 	if tags != nil {
-	for _, value := range tags {
-			if value == "latest" { continue }
-			validatedTags = append(validatedTags, value)
+		for _, tag := range tags {
+			if tag != "latest" {
+				finalTags = append(finalTags, tag)
+			}
 		}
 	}
 
-	// Default version if not set
-	validatedTagsLen := len(validatedTags)
-
-	if validatedTagsLen == 1 {
+	// Adds default version if no additional tag given
+	if len(tags) == 0 {
 		// default version format: the current date time in format YYYYMMDDTHHMM
-		version := time.Now().Format("20060102T1504")
-		validatedTags = append(validatedTags, version)
+		version := createTimeBasedVersion(time.Now())
+		finalTags = append(finalTags, version)
 	}
 
-	return validatedTags
+	return finalTags
+}
+
+func createTimeBasedVersion(t time.Time) string {
+	return t.Format("20060102T1504")
 }
 
 func createAndPushTag(imageTag string, version string) error {
