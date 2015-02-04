@@ -15,6 +15,7 @@ type HarborFile struct {
 type HarborConfig struct {
 	ImageTag      string
 	CliConfigVars commandline.ConfigVarsMap
+	Tags          []string
 	S3            struct {
 		Bucket   string
 		BasePath string
