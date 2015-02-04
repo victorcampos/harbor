@@ -1,2 +1,3 @@
 # Ignores goxc local configurations
 .goxc.local.json
+build/
