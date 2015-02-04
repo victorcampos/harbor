@@ -44,7 +44,7 @@ func main() {
 	}
 
 	if !*noDockerFlag {
-		err = docker.Build(harborConfig.ImageTag)
+		err = docker.Build(harborConfig.ImageTag, harborConfig.Tags)
 		checkError(err)
 	}
 }

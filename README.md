@@ -18,6 +18,7 @@ Usage: `harbor [-e KEY=VALUE]`
 Harbor looks up a file named harbor.yml in the same directory where run from, harbor.yml structure is:
 ```
 imagetag: <tag to be used on 'docker build'>
+ tags: [] <tags to create and push into registry>
  downloadpath: <local root path to download files into>
  s3:
    bucket: <base bucket to download files from>
