@@ -11,7 +11,7 @@ import (
 	"os"
 )
 
-const VERSION = "0.1.0"
+const VERSION = "0.1.1"
 
 func main() {
 	setCustomUsageMessage()
@@ -56,6 +56,8 @@ func setCustomUsageMessage() {
 
 Harbor looks up a file named harbor.yml in the same directory where run from, harbor.yml structure is:
  imagetag: <tag to be used on 'docker build'>
+ tags:
+   - <YAML array of custom tags to create and push into registry>
  downloadpath: <local root path to download files into>
  s3:
    bucket: <base bucket to download files from>
@@ -64,8 +66,8 @@ Harbor looks up a file named harbor.yml in the same directory where run from, ha
    - s3path: <path to file in S3 after [s3.bucket]/[s3.basepath]>
      filename: <local path + name of the file, will be downloaded into [downloadpath]/[localname]>
      permission: <[optional] file permissions, default 0644>
- - commands:
-   <YAML array containing shell commands (currently /bin/bash) to be run before 'docker build'>
+ commands:
+   - <YAML array containing shell commands (currently /bin/bash) to be run before 'docker build'>
 
  You can use ${<KEY>} as a placeholder in harbor.yml to be replaced by the value passed in a -e flag
 
