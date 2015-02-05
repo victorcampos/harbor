@@ -11,7 +11,7 @@ import (
 	"os"
 )
 
-const VERSION = "0.1.1"
+const VERSION = "0.1.2"
 
 func main() {
 	setCustomUsageMessage()
@@ -23,6 +23,8 @@ func main() {
 	noCommandFlag := flag.Bool("no-command", false, "do not run commands")
 	noDockerFlag := flag.Bool("no-docker", false, "do not run docker build, tag and push after")
 	showVersionFlag := flag.Bool("v", false, "shows version")
+	dockerOpts := flag.String("docker-opts", "", "appended options to docker commands")
+
 	flag.Parse()
 
 	if *showVersionFlag {
@@ -32,6 +34,8 @@ func main() {
 
 	harborConfig, err := config.Load(configVars)
 	checkError(err)
+
+	config.Options.DockerOpts = *dockerOpts
 
 	if !*noDownloadFlag {
 		err = download.FromS3(harborConfig)
@@ -77,6 +81,7 @@ Options:
   -no-download: do not download files
   -no-command: do not run commands
   -no-docker: do not run 'docker build', 'docker tag' and 'docker push' after file downloads and command runs
+  -docker-opts: options to prepend to docker command
 `
 		fmt.Println(helpText)
 	}

@@ -1,0 +1,15 @@
+{
+	"ArtifactsDest": "build/",
+	"Arch": "amd64",
+	"Os": "linux darwin",
+	"PackageVersion": "0.1.2",
+	"TaskSettings": {
+		"bintray": {
+			"downloadspage": "bintray.md",
+			"package": "Harbor",
+			"repository": "generic",
+			"subject": "victorcampos"
+		}
+	},
+	"ConfigVersion": "0.9"
+}

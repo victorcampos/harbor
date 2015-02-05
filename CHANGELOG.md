@@ -1,4 +1,7 @@
 # Changelog
+## 0.1.2 (2015-02-05)
++ Added support to parameters in docker commands through -docker-opts
+
 ## 0.1.1 (2015-02-04)
 + Added support for custom tags
 

@@ -2,6 +2,7 @@ package docker
 
 import (
 	"fmt"
+	"github.com/victorcampos/harbor/config"
 	"github.com/victorcampos/harbor/execute"
 	"os"
 	"time"
@@ -12,7 +13,7 @@ func Build(imageTag string, supplementaryTags []string) error {
 
 	// FIXME: Use Docker Remote API to perform docker commands
 	// Current usage is too OS-specific and depends on sudo power when executing harbor
-	if err := execute.CommandWithArgs("docker", "build", "-t", imageTag, cwd); err != nil {
+	if err := runDockerCommand("build", "-t", imageTag, cwd); err != nil {
 		return err
 	}
 
@@ -55,13 +56,21 @@ func createTimeBasedVersion(t time.Time) string {
 func createAndPushTag(imageTag string, version string) error {
 	versionedImageTag := fmt.Sprintf("%s:%s", imageTag, version)
 
-	if err := execute.CommandWithArgs("docker", "tag", "-f", imageTag, versionedImageTag); err != nil {
+	if err := runDockerCommand("tag", "-f", imageTag, versionedImageTag); err != nil {
 		return err
 	}
 
-	if err := execute.CommandWithArgs("docker", "push", versionedImageTag); err != nil {
+	if err := runDockerCommand("push", versionedImageTag); err != nil {
 		return err
 	}
 
 	return nil
+}
+
+func runDockerCommand(parameters ...string) error {
+	if len(config.Options.DockerOpts) > 0 {
+		parameters = append([]string{config.Options.DockerOpts}, parameters...)
+	}
+
+	return execute.CommandWithArgs("docker", parameters...)
 }

@@ -6,6 +6,10 @@ import (
 	"io/ioutil"
 )
 
+var Options struct {
+	DockerOpts string
+}
+
 type HarborFile struct {
 	S3Path     string
 	FileName   string
