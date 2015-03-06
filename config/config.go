@@ -7,7 +7,9 @@ import (
 )
 
 var Options struct {
-	DockerOpts string
+	DockerOpts   string
+	NoDockerPush bool
+	NoLatestTag  bool
 }
 
 type HarborFile struct {
