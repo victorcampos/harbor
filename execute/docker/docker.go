@@ -41,6 +41,12 @@ func Build(imageTag string, supplementaryTags []string) error {
 		}
 	}
 
+	if !config.Options.NoDockerPush && !config.Options.NoLatestTag {
+		if err := pushTag(imageTag, "latest"); err != nil {
+			return err
+		}
+	}
+
 	return nil
 }
 
@@ -98,5 +104,10 @@ func runDockerCommand(parameters ...string) error {
 		parameters = append([]string{config.Options.DockerOpts}, parameters...)
 	}
 
-	return execute.CommandWithArgs("docker", parameters...)
+	if !config.Options.Debug {
+		return execute.CommandWithArgs("docker", parameters...)
+	} else {
+		fmt.Printf("docker %s\n", parameters)
+		return nil
+	}
 }

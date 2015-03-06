@@ -41,11 +41,17 @@ func CommandWithArgs(commandHead string, commandArgs ...string) error {
 	concatenatedCommand := strings.Join([]string{commandHead, args}, " ")
 
 	// FIXME: Probably change to use /bin/sh or the default interpreter
-	command := exec.Command("/bin/bash", "-c", concatenatedCommand)
-	command.Stdout = os.Stdout
-	command.Stderr = os.Stderr
+	if !config.Options.Debug {
+		command := exec.Command("/bin/bash", "-c", concatenatedCommand)
+		command.Stdout = os.Stdout
+		command.Stderr = os.Stderr
 
-	err := command.Run()
+		err := command.Run()
 
-	return err
+		return err
+	} else {
+		fmt.Printf("/bin/bash -c %s\n", concatenatedCommand)
+
+		return nil
+	}
 }

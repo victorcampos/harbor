@@ -7,6 +7,7 @@ import (
 )
 
 var Options struct {
+	Debug        bool
 	DockerOpts   string
 	NoDockerPush bool
 	NoLatestTag  bool

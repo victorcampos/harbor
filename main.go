@@ -19,6 +19,8 @@ func main() {
 	configVars := make(commandline.ConfigVarsMap)
 
 	flag.Var(&configVars, "e", "sets configuration variables")
+	debugFlag := flag.Bool("debug", false, "do not run commands, displays debug information")
+
 	noDownloadFlag := flag.Bool("no-download", false, "do not download files")
 	noCommandFlag := flag.Bool("no-command", false, "do not run commands")
 	noDockerFlag := flag.Bool("no-docker", false, "do not run docker build, tag and push after")
@@ -37,6 +39,7 @@ func main() {
 	harborConfig, err := config.Load(configVars)
 	checkError(err)
 
+	config.Options.Debug = *debugFlag
 	config.Options.DockerOpts = *dockerOpts
 	config.Options.NoDockerPush = *noDockerPushFlag
 	config.Options.NoLatestTag = *noLatestTagFlag
@@ -80,8 +83,9 @@ Harbor looks up a file named harbor.yml in the same directory where run from, ha
  You can use ${<KEY>} as a placeholder in harbor.yml to be replaced by the value passed in a -e flag
 
 Options:
-  -e []: List of KEY=VALUE to be replaced in harbor.yml
-  -v: Display version information
+  -e []: list of KEY=VALUE to be replaced in harbor.yml
+  -v: display version information
+  -debug: do not run commands, displays debug information
   -no-download: do not download files
   -no-command: do not run commands
 
