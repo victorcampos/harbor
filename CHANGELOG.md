@@ -1,4 +1,8 @@
 # Changelog
+
+## 0.1.3 (2015-03-05)
++ Added `-no-docker-push` and `-no-latest-tag` flags
+
 ## 0.1.2 (2015-02-05)
 + Added support to parameters in docker commands through -docker-opts
 
