@@ -1,8 +1,8 @@
 package main
 
 import (
-	"flag"
 	"fmt"
+	"github.com/docopt/docopt-go"
 	"github.com/victorcampos/harbor/commandline"
 	"github.com/victorcampos/harbor/config"
 	"github.com/victorcampos/harbor/download"
@@ -11,59 +11,10 @@ import (
 	"os"
 )
 
-const VERSION = "0.1.4"
+const VERSION = "0.2.0"
 
 func main() {
-	setCustomUsageMessage()
-
-	configVars := make(commandline.ConfigVarsMap)
-
-	flag.Var(&configVars, "e", "sets configuration variables")
-	debugFlag := flag.Bool("debug", false, "do not run commands, displays debug information")
-
-	noDownloadFlag := flag.Bool("no-download", false, "do not download files")
-	noCommandFlag := flag.Bool("no-command", false, "do not run commands")
-	noDockerFlag := flag.Bool("no-docker", false, "do not run docker build, tag and push after")
-	noDockerPushFlag := flag.Bool("no-docker-push", false, "do not run docker push after")
-	noLatestTagFlag := flag.Bool("no-latest-tag", false, "do not tag latest in docker tag")
-	showVersionFlag := flag.Bool("v", false, "shows version")
-	dockerOpts := flag.String("docker-opts", "", "appended options to docker commands")
-
-	flag.Parse()
-
-	if *showVersionFlag {
-		fmt.Printf("Harbor version %s\n", VERSION)
-		os.Exit(0)
-	}
-
-	harborConfig, err := config.Load(configVars)
-	checkError(err)
-
-	config.Options.Debug = *debugFlag
-	config.Options.DockerOpts = *dockerOpts
-	config.Options.NoDockerPush = *noDockerPushFlag
-	config.Options.NoLatestTag = *noLatestTagFlag
-
-	if !*noDownloadFlag {
-		err = download.FromS3(harborConfig)
-		checkError(err)
-	}
-
-	if !*noCommandFlag {
-		err = execute.Commands(harborConfig)
-		checkError(err)
-	}
-
-	if !*noDockerFlag {
-		err = docker.Build(harborConfig.ImageTag, harborConfig.Tags)
-		checkError(err)
-	}
-}
-
-func setCustomUsageMessage() {
-	// TODO: Alter the help message when not using /bin/bash anymore
-	flag.Usage = func() {
-		helpText := `Usage: harbor [-h] [-v] [-e <KEY>=<VALUE>] [-no-download] [-no-command] [-no-docker]
+	usage := `Harbor, a Docker wrapper
 
 Harbor looks up a file named harbor.yml in the same directory where run from, harbor.yml structure is:
  imagetag: <tag to be used on 'docker build'>
@@ -82,20 +33,63 @@ Harbor looks up a file named harbor.yml in the same directory where run from, ha
 
  You can use ${<KEY>} as a placeholder in harbor.yml to be replaced by the value passed in a -e flag
 
-Options:
-  -e []: list of KEY=VALUE to be replaced in harbor.yml
-  -v: display version information
-  -debug: do not run commands, displays debug information
-  -no-download: do not download files
-  -no-command: do not run commands
+Usage:
+  harbor -h | --help
+  harbor --version
+  harbor [-e KEY=VALUE]... [options]
+  harbor [options]
 
-  Docker related:
-  -no-docker: do not run 'docker build', 'docker tag' and 'docker push' after file downloads and command runs
-  -no-docker-push: do not run 'docker push' after file downloads and command runs
-  -no-latest-tag: do not tag build as 'latest'
-  -docker-opts: options to prepend to docker commands
-`
-		fmt.Println(helpText)
+Options:
+  -h, --help                    Show this screen.
+  -v, --version                     Show version.
+  -e KEY=VALUE                  Replaces every ${KEY} in harbor.yml with VALUE
+  --debug                       Dry-run and print command executions.
+  --no-download                 Prevents downloading files from S3.
+  --no-commands                 Prevents commands in harbor.yml from being run.
+  --no-docker                   Do not run 'docker build', 'docker tag' and 'docker push' commands.
+  --no-docker-push              Do not run 'docker push' after building and tagging images.
+  --docker-opts=<DOCKER_OPTS>   Will be appended to the base docker command (ex.: 'docker <docker-opts> command').
+  --no-latest-tag               Do not build image tagging as 'latest',
+                                will use the first tag in 'tags' list from harbor.yml or
+                                generate a timestamped tag if no 'tags' list exists.`
+
+	arguments, _ := docopt.Parse(usage, nil, true, "Harbor "+VERSION, true)
+
+	configVars := arguments["-e"].([]string)
+	debugFlag := arguments["--debug"].(bool)
+	noDownloadFlag := arguments["--no-download"].(bool)
+	noCommandFlag := arguments["--no-commands"].(bool)
+	noDockerFlag := arguments["--no-docker"].(bool)
+	noDockerPushFlag := arguments["--no-docker-push"].(bool)
+	dockerOpts, _ := arguments["--docker-opts"].(string)
+	noLatestTagFlag := arguments["--no-latest-tag"].(bool)
+
+	cliConfigVars, err := commandline.NewConfigVarsMap(configVars)
+	if err != nil {
+		checkError(err)
+	}
+
+	harborConfig, err := config.Load(cliConfigVars)
+	checkError(err)
+
+	config.Options.Debug = debugFlag
+	config.Options.DockerOpts = dockerOpts
+	config.Options.NoDockerPush = noDockerPushFlag
+	config.Options.NoLatestTag = noLatestTagFlag
+
+	if !noDownloadFlag {
+		err = download.FromS3(harborConfig)
+		checkError(err)
+	}
+
+	if !noCommandFlag {
+		err = execute.Commands(harborConfig)
+		checkError(err)
+	}
+
+	if !noDockerFlag {
+		err = docker.Build(harborConfig.ImageTag, harborConfig.Tags)
+		checkError(err)
 	}
 }
 

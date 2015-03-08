@@ -2,24 +2,23 @@ package commandline
 
 import (
 	"errors"
-	"fmt"
 	"strings"
 )
 
 type ConfigVarsMap map[string]string
 
-func (s *ConfigVarsMap) String() string {
-	return fmt.Sprintf("%s", *s)
-}
+func NewConfigVarsMap(keyValues []string) (ConfigVarsMap, error) {
+	configVarsMap := make(ConfigVarsMap)
 
-func (s *ConfigVarsMap) Set(value string) error {
-	valueTuple := strings.Split(value, "=")
+	for _, value := range keyValues {
+		valueTuple := strings.Split(value, "=")
 
-	if len(valueTuple) == 2 {
-		(*s)[valueTuple[0]] = valueTuple[1]
-	} else {
-		return errors.New("missing '='")
+		if len(valueTuple) == 2 {
+			configVarsMap[valueTuple[0]] = valueTuple[1]
+		} else {
+			return nil, errors.New("missing '='")
+		}
 	}
 
-	return nil
+	return configVarsMap, nil
 }
