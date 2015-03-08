@@ -1,7 +1,7 @@
 # Harbor
 ## Description
 
-Harbor is a wrapper for running commands and downloading file dependencies before Docker image building.
+Harbor is a wrapper for running commands and downloading file dependencies (currently only from AWS S3) before Docker image building.
 
 Using Harbor should be simple and Harbor should help to stop usage of customized scripts run before a `docker build`.
 
