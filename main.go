@@ -36,12 +36,14 @@ Harbor looks up a file named harbor.yml in the same directory where run from, ha
 Usage:
   harbor -h | --help
   harbor --version
+  harbor --list-variables
   harbor [-e KEY=VALUE]... [options]
   harbor [options]
 
 Options:
   -h, --help                    Show this screen.
-  -v, --version                     Show version.
+  -v, --version                 Show version.
+  --list-variables         Parses harbor.yml and prints out every ${KEY} found.
   -e KEY=VALUE                  Replaces every ${KEY} in harbor.yml with VALUE
   --debug                       Dry-run and print command executions.
   --no-download                 Prevents downloading files from S3.
@@ -57,12 +59,17 @@ Options:
 
 	configVars := arguments["-e"].([]string)
 	debugFlag := arguments["--debug"].(bool)
+	listVariablesFlag := arguments["--list-variables"].(bool)
 	noDownloadFlag := arguments["--no-download"].(bool)
 	noCommandFlag := arguments["--no-commands"].(bool)
 	noDockerFlag := arguments["--no-docker"].(bool)
 	noDockerPushFlag := arguments["--no-docker-push"].(bool)
 	dockerOpts, _ := arguments["--docker-opts"].(string)
 	noLatestTagFlag := arguments["--no-latest-tag"].(bool)
+
+	if listVariablesFlag {
+		listVariables()
+	}
 
 	cliConfigVars, err := commandline.NewConfigVarsMap(configVars)
 	if err != nil {
@@ -91,6 +98,23 @@ Options:
 		err = docker.Build(harborConfig.ImageTag, harborConfig.Tags)
 		checkError(err)
 	}
+}
+
+func listVariables() {
+	harborConfigFile, err := config.LoadFile()
+	if err != nil {
+		checkError(err)
+	}
+
+	variablesFound := config.ReadEnv(harborConfigFile)
+
+	fmt.Printf("--- Found %d variables in harbor.yml\n", len(variablesFound))
+
+	for _, variable := range variablesFound {
+		fmt.Printf("---   Found: %s\n", variable)
+	}
+
+	os.Exit(0)
 }
 
 func checkError(err error) {

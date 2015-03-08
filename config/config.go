@@ -35,7 +35,7 @@ type HarborConfig struct {
 func Load(cliConfigVars commandline.ConfigVarsMap) (HarborConfig, error) {
 	harborConfig := HarborConfig{}
 
-	configFile, err := ioutil.ReadFile("harbor.yml")
+	configFile, err := LoadFile()
 	if err != nil {
 		return harborConfig, err
 	}
@@ -49,4 +49,8 @@ func Load(cliConfigVars commandline.ConfigVarsMap) (HarborConfig, error) {
 	}
 
 	return harborConfig, nil
+}
+
+func LoadFile() ([]byte, error) {
+	return ioutil.ReadFile("harbor.yml")
 }
