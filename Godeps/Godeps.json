@@ -1,0 +1,23 @@
+{
+	"ImportPath": "github.com/victorcampos/harbor",
+	"GoVersion": "go1.4.2",
+	"Deps": [
+		{
+			"ImportPath": "github.com/docopt/docopt-go",
+			"Comment": "0.6.1-5-g854c423",
+			"Rev": "854c423c810880e30b9fecdabb12d54f4a92f9bb"
+		},
+		{
+			"ImportPath": "github.com/goamz/goamz/aws",
+			"Rev": "0aa2760187a88bafbeb99aacb8d6f7b7eed2f4bd"
+		},
+		{
+			"ImportPath": "github.com/goamz/goamz/s3",
+			"Rev": "0aa2760187a88bafbeb99aacb8d6f7b7eed2f4bd"
+		},
+		{
+			"ImportPath": "gopkg.in/yaml.v2",
+			"Rev": "eca94c41d994ae2215d455ce578ae6e2dc6ee516"
+		}
+	]
+}
