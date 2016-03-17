@@ -26,6 +26,7 @@ type HarborConfig struct {
 	S3            struct {
 		Bucket   string
 		BasePath string
+		Region	 string
 	}
 	DownloadPath string `yaml:",omitempty"`
 	Files        []HarborFile

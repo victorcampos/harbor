@@ -8,19 +8,32 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
+	"errors"
 )
 
 func FromS3(harborConfig config.HarborConfig) error {
+	var region aws.Region
+	var exists bool
 	fileListLength := len(harborConfig.Files)
 
 	if fileListLength > 0 {
-		bucket, err := getBucket(harborConfig.S3.Bucket)
+		if harborConfig.S3.Region == "" {
+			region = aws.USEast
+		} else {
+			region, exists = aws.Regions[harborConfig.S3.Region]
+			if !exists {
+				return errors.New("This region is not valid: " + harborConfig.S3.Region)
+			}
+		}
+
+		bucket, err := getBucket(harborConfig.S3.Bucket, region)
 
 		if err != nil {
 			return err
 		}
 
 		fmt.Printf("--- Downloading from bucket: %s\r\n", harborConfig.S3.Bucket)
+		fmt.Printf("--- Bucket region is set to %s\r\n", region.Name)
 		fmt.Printf("--- Files to be downloaded: %d\r\n", fileListLength)
 		fmt.Printf("--- Downloading to: %s\r\n", harborConfig.DownloadPath)
 		for key, value := range harborConfig.Files {
@@ -38,7 +51,7 @@ func FromS3(harborConfig config.HarborConfig) error {
 	return nil
 }
 
-func getBucket(bucketName string) (*s3.Bucket, error) {
+func getBucket(bucketName string, region aws.Region) (*s3.Bucket, error) {
 	var bucket *s3.Bucket
 
 	awsAuthentication, err := aws.EnvAuth()
@@ -46,7 +59,7 @@ func getBucket(bucketName string) (*s3.Bucket, error) {
 		return bucket, err
 	}
 
-	s3Connection := s3.New(awsAuthentication, aws.USEast)
+	s3Connection := s3.New(awsAuthentication, region)
 	bucket = s3Connection.Bucket(bucketName)
 	if err != nil {
 		return bucket, err
