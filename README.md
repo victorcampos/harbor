@@ -23,6 +23,7 @@ Harbor looks up a file named harbor.yml in the same directory where run from, ha
  s3:
    bucket: <base bucket to download files from>
    basepath: <inside the bucket the root path for files to be downloaded>
+   region: <[optional] region of the bucket, default us-east-1>
  files:
    - s3path: <path to file in S3 after [s3.bucket]/[s3.basepath]>
      filename: <local path + name of the file, will be downloaded into [downloadpath]/[localname]>
